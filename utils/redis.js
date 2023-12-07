@@ -1,23 +1,24 @@
-import { createClient } from 'redis';
+const redis = require("redis");
 
 class RedisClient {
   constructor() {
-    this.client = createClient()
-      .on('error', (err) => console.log(err))
-      .connect();
+    this.client = redis.createClient();
+    ( async () => {
+       await this.client.connect();
+    })();
+   this.client.on('error', err => console.log(err));
   }
 
   isAlive() {
-    return (this.client.ping() === 'PONG');
+    return (this.client.connected);
   }
 
   async get(key) {
-    return (this.client.get(key));
+    return ( await this.client.get(key));
   }
 
   async set(key, value, duration) {
-    this.client.set(key, value);
-    this.client.get(key).expire(duration);
+    await this.client.set(key, value);
   }
 
   async del(key) {
@@ -26,4 +27,4 @@ class RedisClient {
 }
 
 const redisClient = new RedisClient();
-export default redisClient;
+module.exports = redisClient;
