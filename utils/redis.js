@@ -1,12 +1,12 @@
-const redis = require("redis");
+const redis = require('redis');
 
 class RedisClient {
   constructor() {
     this.client = redis.createClient();
-    ( async () => {
-       await this.client.connect();
+    (async () => {
+      await this.client.connect();
     })();
-   this.client.on('error', err => console.log(err));
+    this.client.on('error', (err) => console.log(err));
   }
 
   isAlive() {
@@ -14,11 +14,12 @@ class RedisClient {
   }
 
   async get(key) {
-    return ( await this.client.get(key));
+    const value = await this.client.get(key);
+    return (value);
   }
 
   async set(key, value, duration) {
-    await this.client.set(key, value);
+    await this.client.set(key, value, 'EX', duration);
   }
 
   async del(key) {
